@@ -9,6 +9,7 @@ const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
 
   const isStudentExists = await Student.isStudentExists(studentData.email);
+  console.log(isStudentExists);
   if (isStudentExists) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Student already exists!');
   }

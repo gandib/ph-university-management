@@ -32,6 +32,7 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
     // create an user (transaction-1)
     // transaction data array hishebe dite hoy, data pabo array hishebe, r object hishebe pabo na
     const newUser = await User.create([userData], { session });
+    console.log(newUser);
     // create a student
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Faild to create user!');
