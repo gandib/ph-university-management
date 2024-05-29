@@ -1,10 +1,12 @@
+import httpStatus from 'http-status';
+import AppError from '../../errors/appError';
 import { academicSemesterNameCodeMapper } from './academicSemester.constant';
 import { TAcademicSemester } from './academicSemester.interface';
 import { AcademicSemester } from './academicSemester.model';
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
-    throw new Error('Invalid semester code!');
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid semester code!');
   }
 
   const result = await AcademicSemester.create(payload);
@@ -32,25 +34,25 @@ const updateAcademicSemester = async (
   });
 
   if (isSemesterExists) {
-    throw new Error('Semester is already exists!');
+    throw new AppError(httpStatus.BAD_REQUEST, 'Semester is already exists!');
   } else if (
     payload.name &&
     payload.code &&
     academicSemesterNameCodeMapper[payload.name] !== payload.code
   ) {
-    throw new Error('Invalid semester code!');
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid semester code!');
   } else if (!payload.name && payload.code) {
     if (
       academicSemesterNameCodeMapper[acdemicSemester?.name as string] !==
       payload.code
     ) {
-      throw new Error('Invalid semester code!');
+      throw new AppError(httpStatus.BAD_REQUEST, 'Invalid semester code!');
     }
   } else if (payload.name && !payload.code) {
     if (
       academicSemesterNameCodeMapper[payload?.name] !== acdemicSemester?.code
     ) {
-      throw new Error('Invalid semester code!');
+      throw new AppError(httpStatus.BAD_REQUEST, 'Invalid semester code!');
     }
   }
 

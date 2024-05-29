@@ -1,18 +1,16 @@
 import { Student } from './../student/student.model';
 import { AcademicSemester } from './../academicSemester/academicSemester.model';
 import config from '../../config';
-import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { TStudent } from '../student/student.interface';
-import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
 import { generateStudentId } from './user.util';
+import mongoose from 'mongoose';
+import AppError from '../../errors/appError';
+import httpStatus from 'http-status';
 
 const createUserIntoDB = async (password: string, payload: TStudent) => {
   // creating custom static method
-  //   if (await Student.isUserExists(studentData.id)) {
-  //     throw new Error('User already exists!');
-  //   }
 
   const userData: Partial<TUser> = {};
 
@@ -20,27 +18,42 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
   userData.role = 'student';
 
   // find academic semester info
-  const academicSemester = await AcademicSemester.findById(
+  const admissionSemester = await AcademicSemester.findById(
     payload.admissionSemester,
   );
 
-  userData.id = await generateStudentId(academicSemester);
+  const session = await mongoose.startSession();
 
-  // check existing student
-  const existingStudent = await Student.findOne({ email: payload.email });
-  // create an user
-  if (existingStudent) {
-    throw new Error('Student already exists!');
-  }
-  const newUser = await User.create(userData);
-  // create a student
-  if (Object.keys(newUser).length) {
+  try {
+    session.startTransaction();
+    // set generated id
+    userData.id = await generateStudentId(admissionSemester);
+
+    // create an user (transaction-1)
+    // transaction data array hishebe dite hoy, data pabo array hishebe, r object hishebe pabo na
+    const newUser = await User.create([userData], { session });
+    // create a student
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Faild to create user!');
+    }
     // set id, _id as user
-    payload.id = newUser.id;
-    payload.user = newUser._id;
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id;
 
-    const newStudent = await Student.create(payload);
+    // create a student (transaction-2)
+    const newStudent = await Student.create([payload], { session });
+    if (!newStudent.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Faild to create student!');
+    }
+
+    // permanently save to database, because user, student created successfully
+    await session.commitTransaction();
+    await session.endSession();
     return newStudent;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, 'Faild to create student!');
   }
 };
 

@@ -130,6 +130,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: Boolean,
       default: false,
     },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicDepartment',
+    },
   },
   {
     toJSON: {
@@ -167,6 +171,11 @@ studentSchema.statics.isUserExists = async function (id: string) {
   return existingUser;
 };
 
+// creating a custom static method
+studentSchema.statics.isStudentExists = async function (email: string) {
+  const existingUser = await Student.findOne({ email });
+  return existingUser;
+};
 // creating a custom instance method
 studentSchema.methods.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });

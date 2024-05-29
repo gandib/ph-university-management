@@ -39,11 +39,15 @@ export type TStudent = {
   profileImg?: string;
   admissionSemester: Types.ObjectId;
   isDeleted: boolean;
+  academicDepartment: Types.ObjectId;
 };
 
 // creating custom static method
 export interface StudentModel extends Model<TStudent> {
   isUserExists(id: string): Promise<TStudent | null>;
+}
+export interface StudentModel extends Model<TStudent> {
+  isStudentExists(email: string): Promise<TStudent | null>;
 }
 
 // creating custom instance method
