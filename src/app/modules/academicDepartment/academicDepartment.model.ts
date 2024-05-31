@@ -28,7 +28,6 @@ academicDepartmentSchema.pre('save', async function (next) {
       'This department is already exist!',
     );
   }
-
   next();
 });
 
