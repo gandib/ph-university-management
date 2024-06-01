@@ -145,7 +145,11 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 // virtual for creating new field by getting value in existing field, new field not save into db, just display for client
 studentSchema.virtual('fullName').get(function () {
   return (
-    this.name.firstName + ' ' + this.name.middleName + ' ' + this.name.lastName
+    this?.name?.firstName +
+    ' ' +
+    this?.name?.middleName +
+    ' ' +
+    this?.name?.lastName
   );
 });
 
