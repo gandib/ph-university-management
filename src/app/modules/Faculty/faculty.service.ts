@@ -9,12 +9,7 @@ import { TFaculty } from './faculty.interface';
 
 const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
   const facultyQuery = new QueryBuilder(
-    Faculty.find().populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    }),
+    Faculty.find().populate('academicDepartment'),
     query,
   )
     .search(facultySearchableFields)
@@ -29,12 +24,7 @@ const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getFacultyByIdFromDB = async (id: string) => {
-  const result = await Faculty.findOne({ id }).populate({
-    path: 'academicDepartment',
-    populate: {
-      path: 'academicFaculty',
-    },
-  });
+  const result = await Faculty.findById(id).populate('academicDepartment');
   return result;
 };
 
@@ -51,8 +41,9 @@ const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
     }
   }
 
-  const result = await Faculty.findOneAndUpdate({ id }, modifiedUpdatedData, {
+  const result = await Faculty.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true,
+    runValidators: true,
   });
 
   return result;
@@ -64,22 +55,25 @@ const deleteFacultyFromDB = async (id: string) => {
   try {
     session.startTransaction();
 
-    // const isFacultyExist = await Faculty.isUserExists(id);
-    // if (!isFacultyExist) {
-    //   throw new AppError(httpStatus.BAD_REQUEST, 'Faculty not exist!');
-    // }
+    const isFacultyExist = await Faculty.isUserExists(id);
+    if (!isFacultyExist) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Faculty not exist!');
+    }
 
-    const deletedFaculty = await Faculty.findOneAndUpdate(
-      { id },
+    const deletedFaculty = await Faculty.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
+
     if (!deletedFaculty) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Faild to delete a faculty!');
     }
 
-    const deletedUser = await User.findOneAndUpdate(
-      { id },
+    const userId = deletedFaculty?.user;
+
+    const deletedUser = await User.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session },
     );

@@ -17,13 +17,13 @@ const getAllFaculties = catchAsync(async (req, res) => {
 });
 
 const getFacultyById = catchAsync(async (req, res) => {
-  const { facultyId } = req.params;
-  const isUserExist = await Faculty.isUserExists(facultyId);
+  const { id } = req.params;
+  const isUserExist = await Faculty.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Faculty not exist!');
   }
 
-  const result = await facultyServices.getFacultyByIdFromDB(facultyId);
+  const result = await facultyServices.getFacultyByIdFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -34,14 +34,14 @@ const getFacultyById = catchAsync(async (req, res) => {
 });
 
 const updateFacultyIntoDB = catchAsync(async (req, res) => {
-  const { facultyId } = req.params;
+  const { id } = req.params;
   const { faculty } = req.body;
-  const isUserExist = await Faculty.isUserExists(facultyId);
+  const isUserExist = await Faculty.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Student not exist!');
   }
 
-  const result = await facultyServices.updateFacultyIntoDB(facultyId, faculty);
+  const result = await facultyServices.updateFacultyIntoDB(id, faculty);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -52,12 +52,12 @@ const updateFacultyIntoDB = catchAsync(async (req, res) => {
 });
 
 const deleteFaculty = catchAsync(async (req, res) => {
-  const { facultyId } = req.params;
-  const isUserExist = await Faculty.isUserExists(facultyId);
+  const { id } = req.params;
+  const isUserExist = await Faculty.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Faculty not exist!');
   }
-  const result = await facultyServices.deleteFacultyFromDB(facultyId);
+  const result = await facultyServices.deleteFacultyFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

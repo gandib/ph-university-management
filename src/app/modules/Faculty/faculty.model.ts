@@ -71,7 +71,8 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
     profileImg: { type: String },
     academicDepartment: {
       type: Schema.Types.ObjectId,
-      ref: 'AcademicDepartment',
+      required: [true, 'User Id is required'],
+      ref: 'User',
     },
     isDeleted: {
       type: Boolean,
@@ -86,7 +87,7 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
 );
 
 facultySchema.statics.isUserExists = async function (id: string) {
-  const existingUser = await Faculty.findOne({ id });
+  const existingUser = await Faculty.findById(id);
   return existingUser;
 };
 

@@ -47,7 +47,7 @@ const createAdmin = catchAsync(async (req, res) => {
   const { password, admin: adminData } = req.body;
   const isAdminExists = await Admin.isAdminExists(adminData.email);
   if (isAdminExists) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Faculty already exists!');
+    throw new AppError(httpStatus.BAD_REQUEST, 'Admin already exists!');
   }
 
   const result = await userServices.createAdminIntoDB(password, adminData);

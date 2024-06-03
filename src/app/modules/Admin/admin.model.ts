@@ -82,7 +82,7 @@ const adminSchema = new Schema<TAdmin, AdminModel>(
 );
 
 adminSchema.statics.isUserExists = async function (id: string) {
-  const existingUser = await Admin.findOne({ id });
+  const existingUser = await Admin.findById(id);
   return existingUser;
 };
 

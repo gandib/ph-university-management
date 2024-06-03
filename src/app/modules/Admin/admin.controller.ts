@@ -17,13 +17,13 @@ const getAllAdmins = catchAsync(async (req, res) => {
 });
 
 const getAdminById = catchAsync(async (req, res) => {
-  const { adminId } = req.params;
-  const isUserExist = await Admin.isUserExists(adminId);
+  const { id } = req.params;
+  const isUserExist = await Admin.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Admin not exist!');
   }
 
-  const result = await adminServices.getAdminByIdFromDB(adminId);
+  const result = await adminServices.getAdminByIdFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -34,14 +34,14 @@ const getAdminById = catchAsync(async (req, res) => {
 });
 
 const updateAdminIntoDB = catchAsync(async (req, res) => {
-  const { adminId } = req.params;
+  const { id } = req.params;
   const { admin } = req.body;
-  const isUserExist = await Admin.isUserExists(adminId);
+  const isUserExist = await Admin.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Admin not exist!');
   }
 
-  const result = await adminServices.updateAdminIntoDB(adminId, admin);
+  const result = await adminServices.updateAdminIntoDB(id, admin);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -52,12 +52,12 @@ const updateAdminIntoDB = catchAsync(async (req, res) => {
 });
 
 const deleteAdmin = catchAsync(async (req, res) => {
-  const { adminId } = req.params;
-  const isUserExist = await Admin.isUserExists(adminId);
+  const { id } = req.params;
+  const isUserExist = await Admin.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Admin not exist!');
   }
-  const result = await adminServices.deleteAdminFromDB(adminId);
+  const result = await adminServices.deleteAdminFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

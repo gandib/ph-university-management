@@ -17,13 +17,13 @@ const getAllStudents = catchAsync(async (req, res) => {
 });
 
 const getStudentById = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
-  const isUserExist = await Student.isUserExists(studentId);
+  const { id } = req.params;
+  const isUserExist = await Student.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Student not exist!');
   }
 
-  const result = await studentServices.getStudentByIdFromDB(studentId);
+  const result = await studentServices.getStudentByIdFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -34,14 +34,14 @@ const getStudentById = catchAsync(async (req, res) => {
 });
 
 const updateStudentIntoDB = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
+  const { id } = req.params;
   const { student } = req.body;
-  const isUserExist = await Student.isUserExists(studentId);
+  const isUserExist = await Student.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Student not exist!');
   }
 
-  const result = await studentServices.updateStudentIntoDB(studentId, student);
+  const result = await studentServices.updateStudentIntoDB(id, student);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -52,12 +52,12 @@ const updateStudentIntoDB = catchAsync(async (req, res) => {
 });
 
 const deleteStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
-  const isUserExist = await Student.isUserExists(studentId);
+  const { id } = req.params;
+  const isUserExist = await Student.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Student not exist!');
   }
-  const result = await studentServices.deleteStudentFromDB(studentId);
+  const result = await studentServices.deleteStudentFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

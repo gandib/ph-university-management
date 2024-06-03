@@ -7,12 +7,12 @@ const router = express.Router();
 
 router.get('/', studentControllers.getAllStudents);
 
-router.get('/:studentId', studentControllers.getStudentById);
+router.get('/:id', studentControllers.getStudentById);
 
-router.delete('/:studentId', studentControllers.deleteStudent);
+router.delete('/:id', studentControllers.deleteStudent);
 
 router.patch(
-  '/:studentId',
+  '/:id',
   validateRequest(studentValidations.updateStudentValidationSchema),
   studentControllers.updateStudentIntoDB,
 );

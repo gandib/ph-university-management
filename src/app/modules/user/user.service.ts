@@ -17,6 +17,7 @@ import { TFaculty } from '../Faculty/faculty.interface';
 import { Faculty } from '../Faculty/faculty.model';
 import { TAdmin } from '../Admin/admin.interface';
 import { Admin } from '../Admin/admin.model';
+import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 
 const createUserIntoDB = async (password: string, payload: TStudent) => {
   // creating custom static method
@@ -77,6 +78,18 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   const userData: Partial<TUser> = {};
   userData.password = password || (config.default_password as string);
   userData.role = 'faculty';
+
+  // find academic department info
+  const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDepartment,
+  );
+
+  if (!academicDepartment) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Academic Department not found!',
+    );
+  }
 
   const session = await mongoose.startSession();
   try {
