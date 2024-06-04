@@ -2,6 +2,8 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { courseServices } from './course.service';
+import { Course } from './course.model';
+import AppError from '../../errors/appError';
 
 const createCourse = catchAsync(async (req, res) => {
   const { course: courseData } = req.body;
@@ -28,6 +30,10 @@ const getAllCoursesFromDB = catchAsync(async (req, res) => {
 
 const getCourseById = catchAsync(async (req, res) => {
   const { id } = req.params;
+  const isUserExist = await Course.isUserExists(id);
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Course not exist!');
+  }
   const result = await courseServices.getCourseById(id);
 
   sendResponse(res, {
@@ -41,6 +47,10 @@ const getCourseById = catchAsync(async (req, res) => {
 const updateCourse = catchAsync(async (req, res) => {
   const { course: courseData } = req.body;
   const { id } = req.params;
+  const isUserExist = await Course.isUserExists(id);
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Course not exist!');
+  }
   const result = await courseServices.updateCourse(id, courseData);
 
   sendResponse(res, {
@@ -53,6 +63,10 @@ const updateCourse = catchAsync(async (req, res) => {
 
 const deleteCourse = catchAsync(async (req, res) => {
   const { id } = req.params;
+  const isUserExist = await Course.isUserExists(id);
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Course not exist!');
+  }
   const result = await courseServices.deleteCourse(id);
 
   sendResponse(res, {

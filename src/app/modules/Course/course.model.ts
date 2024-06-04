@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import {
+  CourseModel,
   TCourse,
   TCourseFaculty,
   TPreRequisiteCourses,
@@ -21,7 +22,7 @@ const preRequisiteCoursesSchema = new Schema<TPreRequisiteCourses>(
   },
 );
 
-const courseSchema = new Schema<TCourse>(
+const courseSchema = new Schema<TCourse, CourseModel>(
   {
     title: { type: String, required: true, unique: true, trim: true },
     prefix: { type: String, required: true, trim: true },
@@ -35,7 +36,17 @@ const courseSchema = new Schema<TCourse>(
   },
 );
 
-export const Course = model<TCourse>('Course', courseSchema);
+courseSchema.statics.isUserExists = async function (id: string) {
+  const existingUser = await Course.findById(id);
+  return existingUser;
+};
+
+courseSchema.statics.isAdminExists = async function (email: string) {
+  const existingAdmin = await Course.findOne({ email });
+  return existingAdmin;
+};
+
+export const Course = model<TCourse, CourseModel>('Course', courseSchema);
 
 const courseFacultySchema = new Schema<TCourseFaculty>({
   course: {

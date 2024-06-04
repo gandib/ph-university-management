@@ -1,8 +1,8 @@
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export type TPreRequisiteCourses = {
   course: Types.ObjectId;
-  isDeleted: boolean;
+  isDeleted?: boolean;
 };
 
 export type TCourse = {
@@ -10,7 +10,7 @@ export type TCourse = {
   prefix: string;
   code: number;
   credits: number;
-  isDeleted: boolean;
+  isDeleted?: boolean;
   preRequisiteCourses: [TPreRequisiteCourses];
 };
 
@@ -18,3 +18,11 @@ export type TCourseFaculty = {
   course: Types.ObjectId;
   faculties: [Types.ObjectId];
 };
+
+export interface CourseModel extends Model<TCourse> {
+  isUserExists(id: string): Promise<TCourse | null>;
+}
+
+export interface CourseModel extends Model<TCourse> {
+  isAdminExists(email: string): Promise<TCourse | null>;
+}
