@@ -7,6 +7,7 @@ import { Faculty } from './faculty.model';
 
 const getAllFaculties = catchAsync(async (req, res) => {
   const result = await facultyServices.getAllFacultiesFromDB(req.query);
+  // console.log(req.user);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

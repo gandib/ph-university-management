@@ -19,7 +19,7 @@ import { TAdmin } from '../Admin/admin.interface';
 import { Admin } from '../Admin/admin.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 
-const createUserIntoDB = async (password: string, payload: TStudent) => {
+const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // creating custom static method
 
   const userData: Partial<TUser> = {};
@@ -158,7 +158,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
 };
 
 export const userServices = {
-  createUserIntoDB,
+  createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
 };
