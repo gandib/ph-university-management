@@ -1,10 +1,11 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import AppError from '../errors/appError';
 import catchAsync from '../utils/catchAsync';
 import config from '../config';
 import { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
+import { verifyToken } from '../modules/Auth/auth.utils';
 
 const auth = (...requiredRole: TUserRole[]) => {
   return catchAsync(async (req, res, next) => {
@@ -16,10 +17,7 @@ const auth = (...requiredRole: TUserRole[]) => {
     }
 
     // check if the token is valid
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload;
+    const decoded = verifyToken(token, config.jwt_access_secret as string);
 
     const { role, userId, iat } = decoded;
 

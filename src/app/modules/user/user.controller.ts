@@ -2,18 +2,10 @@ import { userServices } from './user.service';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
-import { Student } from '../student/student.model';
-import AppError from '../../errors/appError';
-import { Faculty } from '../Faculty/faculty.model';
-import { Admin } from '../Admin/admin.model';
 
 const createStudent = catchAsync(async (req, res) => {
+  console.log(req.file);
   const { password, student: studentData } = req.body;
-
-  const isStudentExists = await Student.isStudentExists(studentData.email);
-  if (isStudentExists) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Student already exists!');
-  }
 
   // will call service function to send this data
   const result = await userServices.createStudentIntoDB(password, studentData);
@@ -28,10 +20,6 @@ const createStudent = catchAsync(async (req, res) => {
 
 const createFaculty = catchAsync(async (req, res) => {
   const { password, faculty: facultyData } = req.body;
-  const isFacultyExists = await Faculty.isFacultyExists(facultyData.email);
-  if (isFacultyExists) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Faculty already exists!');
-  }
 
   const result = await userServices.createFacultyIntoDB(password, facultyData);
 
@@ -45,10 +33,6 @@ const createFaculty = catchAsync(async (req, res) => {
 
 const createAdmin = catchAsync(async (req, res) => {
   const { password, admin: adminData } = req.body;
-  const isAdminExists = await Admin.isAdminExists(adminData.email);
-  if (isAdminExists) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Admin already exists!');
-  }
 
   const result = await userServices.createAdminIntoDB(password, adminData);
 
@@ -60,8 +44,34 @@ const createAdmin = catchAsync(async (req, res) => {
   });
 });
 
+const getMe = catchAsync(async (req, res) => {
+  const { userId, role } = req.user;
+  const result = await userServices.getMe(userId, role);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User is retrieved successfully!',
+    data: result,
+  });
+});
+
+const changeStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await userServices.changeStatus(id, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Status is updated successfully!',
+    data: result,
+  });
+});
+
 export const userControllers = {
   createStudent,
   createFaculty,
   createAdmin,
+  getMe,
+  changeStatus,
 };

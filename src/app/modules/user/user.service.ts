@@ -12,20 +12,27 @@ import {
 import mongoose from 'mongoose';
 import AppError from '../../errors/appError';
 import httpStatus from 'http-status';
-// import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { TFaculty } from '../Faculty/faculty.interface';
 import { Faculty } from '../Faculty/faculty.model';
 import { TAdmin } from '../Admin/admin.interface';
 import { Admin } from '../Admin/admin.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
+import { USER_ROLE } from './user.constant';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
-  // creating custom static method
+  const isStudentExists = await Student.isStudentExists(payload?.email);
+  if (isStudentExists) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Student already exists!');
+  }
 
   const userData: Partial<TUser> = {};
 
   userData.password = password || (config.default_password as string);
+  // set student role
   userData.role = 'student';
+  // set student email
+  userData.email = payload?.email;
 
   // find academic semester info
   const admissionSemester = await AcademicSemester.findById(
@@ -45,6 +52,10 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
 
     // set generated id
     userData.id = await generateStudentId(admissionSemester);
+
+    // send image to cloudinary
+    sendImageToCloudinary();
+
     // create an user (transaction-1)
     // transaction data array hishebe dite hoy, data pabo array hishebe, r object hishebe pabo na
     const newUser = await User.create([userData], { session });
@@ -74,10 +85,18 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
 };
 
 const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+  const isFacultyExists = await Faculty.isFacultyExists(payload?.email);
+  if (isFacultyExists) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Faculty already exists!');
+  }
+
   // create a user object
   const userData: Partial<TUser> = {};
   userData.password = password || (config.default_password as string);
+  // set faculty role
   userData.role = 'faculty';
+  // set faculty email
+  userData.email = payload?.email;
 
   // find academic department info
   const academicDepartment = await AcademicDepartment.findById(
@@ -122,10 +141,17 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 };
 
 const createAdminIntoDB = async (password: string, payload: TAdmin) => {
+  const isAdminExists = await Admin.isAdminExists(payload?.email);
+  if (isAdminExists) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Admin already exists!');
+  }
   // create a user object
   const userData: Partial<TUser> = {};
   userData.password = password || (config.default_password as string);
+  // set admin role
   userData.role = 'admin';
+  // set admin email
+  userData.email = payload?.email;
 
   const session = await mongoose.startSession();
   try {
@@ -157,8 +183,31 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 };
 
+const getMe = async (userId: string, role: string) => {
+  let result = null;
+
+  if (role === USER_ROLE.student) {
+    result = await Student.findOne({ id: userId }).populate('user');
+  }
+  if (role === USER_ROLE.faculty) {
+    result = await Faculty.findOne({ id: userId }).populate('user');
+  }
+  if (role === USER_ROLE.admin) {
+    result = await Admin.findOne({ id: userId }).populate('user');
+  }
+
+  return result;
+};
+
+const changeStatus = async (id: string, payload: { status: string }) => {
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
 export const userServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMe,
+  changeStatus,
 };
