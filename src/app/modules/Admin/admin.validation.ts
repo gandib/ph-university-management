@@ -43,7 +43,7 @@ const updateAdminUserNameValidationSchema = z.object({
 // Define Zod schema for studentSchema
 const createAdminValidationSchema = z.object({
   body: z.object({
-    password: z.string().max(20),
+    password: z.string().max(20).optional(),
     admin: z.object({
       designation: z.string(),
       name: createAdminUserNameValidationSchema,

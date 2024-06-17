@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import config from '../config';
+import multer from 'multer';
 
 export const sendEmail = async (to: string, html: string) => {
   const transporter = nodemailer.createTransport({
@@ -20,3 +21,15 @@ export const sendEmail = async (to: string, html: string) => {
     html, // html body
   });
 };
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, process.cwd() + '/uploads');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + '-' + uniqueSuffix);
+  },
+});
+
+export const upload = multer({ storage: storage });
