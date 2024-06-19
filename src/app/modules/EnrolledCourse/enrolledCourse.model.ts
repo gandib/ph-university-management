@@ -1,13 +1,16 @@
 import { Schema, model } from 'mongoose';
-import { TCourseMarks, TEnrolledCourse } from './enrolledCourse.interface';
+import {
+  TEnrolledCourse,
+  TEnrolledCourseMarks,
+} from './enrolledCourse.interface';
 import { grade } from './enrolledCourse.constant';
 
-const courseMarksSchema = new Schema<TCourseMarks>(
+const enrolledCourseMarksSchema = new Schema<TEnrolledCourseMarks>(
   {
-    classTest1: { type: Number, default: 0 },
-    midTerm: { type: Number, default: 0 },
-    classTest2: { type: Number, default: 0 },
-    finalTerm: { type: Number, default: 0 },
+    classTest1: { type: Number, min: 0, max: 10, default: 0 },
+    midTerm: { type: Number, min: 0, max: 30, default: 0 },
+    classTest2: { type: Number, min: 0, max: 10, default: 0 },
+    finalTerm: { type: Number, min: 0, max: 50, default: 0 },
   },
   { _id: false },
 );
@@ -54,7 +57,7 @@ const enrolledCourseSchema = new Schema<TEnrolledCourse>({
     required: true,
   },
   isEnrolled: { type: Boolean, default: true },
-  courseMarks: { type: courseMarksSchema, default: {} },
+  courseMarks: { type: enrolledCourseMarksSchema, default: {} },
   grade: { type: String, enum: grade, default: 'NA' },
   gradePoints: {
     type: Number,
@@ -62,7 +65,7 @@ const enrolledCourseSchema = new Schema<TEnrolledCourse>({
     max: 4,
     default: 0,
   },
-  iscompleted: { type: Boolean, default: false },
+  isCompleted: { type: Boolean, default: false },
 });
 
 export const EnrolledCourse = model<TEnrolledCourse>(
