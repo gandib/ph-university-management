@@ -1,4 +1,5 @@
-import { v2 as cloudinary } from 'cloudinary';
+/* eslint-disable no-console */
+import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
 import config from '../config';
 import fs from 'fs';
 
@@ -24,13 +25,13 @@ export const sendImageToCloudinary = async (
         if (error) {
           reject(error);
         }
-        resolve(result);
+        resolve(result as UploadApiResponse);
         // delete a file asynchronously
         fs.unlink(path, (err) => {
           if (err) {
             reject(err);
           } else {
-            resolve('File is deleted.');
+            console.log('File is deleted.');
           }
         });
       },
