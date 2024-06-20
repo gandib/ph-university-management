@@ -7,18 +7,27 @@ import { USER_ROLE } from '../user/user.constant';
 
 const router = express.Router();
 
-router.get('/', studentControllers.getAllStudents);
+router.get(
+  '/',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  studentControllers.getAllStudents,
+);
 
 router.get(
   '/:id',
-  auth(USER_ROLE.admin, USER_ROLE.faculty),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty),
   studentControllers.getStudentById,
 );
 
-router.delete('/:id', studentControllers.deleteStudent);
+router.delete(
+  '/:id',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  studentControllers.deleteStudent,
+);
 
 router.patch(
   '/:id',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(studentValidations.updateStudentValidationSchema),
   studentControllers.updateStudentIntoDB,
 );

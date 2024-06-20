@@ -67,10 +67,29 @@ const getAllSemesterRegistration = async (query: Record<string, unknown>) => {
 
   return result;
 };
+
 const getSingleSemesterRegistration = async (id: string) => {
   const result = await SemesterRegistration.findById(id);
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Semester Registration not found!',
+    );
+  }
   return result;
 };
+
+const deleteSemesterRegistration = async (id: string) => {
+  const result = await SemesterRegistration.findByIdAndDelete(id);
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Semester Registration not found!',
+    );
+  }
+  return result;
+};
+
 const updateSemesterRegistration = async (
   id: string,
   payload: Partial<TSemesterRegistration>,
@@ -126,4 +145,5 @@ export const semesterRegistrationServices = {
   getAllSemesterRegistration,
   getSingleSemesterRegistration,
   updateSemesterRegistration,
+  deleteSemesterRegistration,
 };

@@ -208,7 +208,6 @@ const updateEnrolledCourseMarks = async (
     modifiedData.grade = result.grade;
     modifiedData.gradePoints = result.gradePoints;
     modifiedData.isCompleted = true;
-    console.log(result);
   }
 
   if (courseMarks && Object.keys(courseMarks).length) {

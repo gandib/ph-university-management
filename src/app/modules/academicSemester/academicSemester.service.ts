@@ -15,11 +15,17 @@ const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
 
 const getAllAcademicSemesters = async () => {
   const result = await AcademicSemester.find();
+  if (result.length <= 0) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Academic semester not found!');
+  }
   return result;
 };
 
 const getAllAcademicSemesterById = async (semesterId: string) => {
   const result = await AcademicSemester.findById(semesterId);
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Academic semester not found!');
+  }
   return result;
 };
 
