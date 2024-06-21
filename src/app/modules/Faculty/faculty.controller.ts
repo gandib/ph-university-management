@@ -7,13 +7,13 @@ import { Faculty } from './faculty.model';
 
 const getAllFaculties = catchAsync(async (req, res) => {
   const result = await facultyServices.getAllFacultiesFromDB(req.query);
-  console.log(req.cookies);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Faculties are retrieved successfully!',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

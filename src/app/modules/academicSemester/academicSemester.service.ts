@@ -3,6 +3,7 @@ import AppError from '../../errors/appError';
 import { academicSemesterNameCodeMapper } from './academicSemester.constant';
 import { TAcademicSemester } from './academicSemester.interface';
 import { AcademicSemester } from './academicSemester.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
@@ -13,15 +14,21 @@ const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   return result;
 };
 
-const getAllAcademicSemesters = async () => {
-  const result = await AcademicSemester.find();
+const getAllAcademicSemesters = async (query: Record<string, unknown>) => {
+  const semesterQuery = new QueryBuilder(AcademicSemester.find(), query);
+
+  const result = await semesterQuery.modelQuery;
+  const meta = await semesterQuery.countTotal();
   if (result.length <= 0) {
     throw new AppError(httpStatus.NOT_FOUND, 'Academic semester not found!');
   }
-  return result;
+  return {
+    meta,
+    result,
+  };
 };
 
-const getAllAcademicSemesterById = async (semesterId: string) => {
+const getAcademicSemesterById = async (semesterId: string) => {
   const result = await AcademicSemester.findById(semesterId);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Academic semester not found!');
@@ -71,6 +78,6 @@ const updateAcademicSemester = async (
 export const academicSemesterServices = {
   createAcademicSemesterIntoDB,
   getAllAcademicSemesters,
-  getAllAcademicSemesterById,
+  getAcademicSemesterById,
   updateAcademicSemester,
 };

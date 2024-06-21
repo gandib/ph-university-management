@@ -17,18 +17,21 @@ const createAcademicSemester = catchAsync(async (req, res) => {
 });
 
 const getAllAcademicSemesters = catchAsync(async (req, res) => {
-  const result = await academicSemesterServices.getAllAcademicSemesters();
+  const result = await academicSemesterServices.getAllAcademicSemesters(
+    req.query,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Academic Semesters fatched successfully!',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 
-const getAllAcademicSemesterById = catchAsync(async (req, res) => {
-  const result = await academicSemesterServices.getAllAcademicSemesterById(
+const getAcademicSemesterById = catchAsync(async (req, res) => {
+  const result = await academicSemesterServices.getAcademicSemesterById(
     req.params.semesterId,
   );
 
@@ -59,6 +62,6 @@ const updateAcademicSemester = catchAsync(async (req, res) => {
 export const academicSemesterControllers = {
   createAcademicSemester,
   getAllAcademicSemesters,
-  getAllAcademicSemesterById,
+  getAcademicSemesterById,
   updateAcademicSemester,
 };

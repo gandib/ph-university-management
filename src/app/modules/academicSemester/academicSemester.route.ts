@@ -21,7 +21,7 @@ router.get(
     USER_ROLE.faculty,
     USER_ROLE.student,
   ),
-  academicSemesterControllers.getAllAcademicSemesterById,
+  academicSemesterControllers.getAcademicSemesterById,
 );
 router.patch(
   '/:semesterId',
