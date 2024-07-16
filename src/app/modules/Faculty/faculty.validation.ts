@@ -63,6 +63,7 @@ const createFacultyValidationSchema = z.object({
 
 const updateFacultyValidationSchema = z.object({
   body: z.object({
+    password: z.string().optional(),
     faculty: z.object({
       designation: z.string().optional(),
       name: updateFacultyUserNameValidationSchema.optional(),

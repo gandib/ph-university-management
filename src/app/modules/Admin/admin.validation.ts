@@ -62,6 +62,7 @@ const createAdminValidationSchema = z.object({
 
 const updateAdminValidationSchema = z.object({
   body: z.object({
+    password: z.string().optional(),
     admin: z.object({
       designation: z.string().optional(),
       name: updateAdminUserNameValidationSchema.optional(),

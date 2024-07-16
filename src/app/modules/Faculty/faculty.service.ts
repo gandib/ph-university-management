@@ -6,6 +6,8 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { Faculty } from './faculty.model';
 import { facultySearchableFields } from './faculty.constant';
 import { TFaculty } from './faculty.interface';
+import config from '../../config';
+import bcrypt from 'bcrypt';
 
 const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
   const facultyQuery = new QueryBuilder(
@@ -32,7 +34,11 @@ const getFacultyByIdFromDB = async (id: string) => {
   return result;
 };
 
-const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
+const updateFacultyIntoDB = async (
+  id: string,
+  payload: Partial<TFaculty>,
+  password: string,
+) => {
   const { name, ...remainingFacultyData } = payload;
 
   const modifiedUpdatedData: Record<string, unknown> = {
@@ -43,6 +49,26 @@ const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
     for (const [key, value] of Object.entries(name)) {
       modifiedUpdatedData[`name.${key}`] = value;
     }
+  }
+
+  if (password) {
+    const facultyId = await Faculty.findById(id).select('id');
+
+    const user = await User.findOne({ id: facultyId?.id });
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Faculty not found!');
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(config.bcrypt_salt_rounds),
+    );
+
+    await User.findByIdAndUpdate(
+      user?._id,
+      { password: hashedPassword },
+      { new: true },
+    );
   }
 
   const result = await Faculty.findByIdAndUpdate(id, modifiedUpdatedData, {

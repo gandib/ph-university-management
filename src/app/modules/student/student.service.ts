@@ -6,11 +6,13 @@ import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { studentSearchableFields } from './student.constant';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   const studentQuery = new QueryBuilder(
     Student.find().populate(
-      'admissionSemester academicDepartment academicFaculty',
+      'user admissionSemester academicDepartment academicFaculty',
     ),
     query,
   )
@@ -44,7 +46,11 @@ const getStudentByIdFromDB = async (id: string) => {
   return result;
 };
 
-const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
+const updateStudentIntoDB = async (
+  id: string,
+  payload: Partial<TStudent>,
+  password: string,
+) => {
   const { name, guardian, localGuardian, ...remainingStudentData } = payload;
 
   const modifiedUpdatedData: Record<string, unknown> = {
@@ -67,10 +73,29 @@ const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
     }
   }
 
+  if (password) {
+    const studentId = await Student.findById(id).select('id');
+
+    const user = await User.findOne({ id: studentId?.id });
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Student not found!');
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(config.bcrypt_salt_rounds),
+    );
+
+    await User.findByIdAndUpdate(
+      user?._id,
+      { password: hashedPassword },
+      { new: true },
+    );
+  }
+
   const result = await Student.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true,
   });
-
   return result;
 };
 

@@ -36,13 +36,13 @@ const getAdminById = catchAsync(async (req, res) => {
 
 const updateAdminIntoDB = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { admin } = req.body;
+  const { admin, password } = req.body;
   const isUserExist = await Admin.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Admin not exist!');
   }
 
-  const result = await adminServices.updateAdminIntoDB(id, admin);
+  const result = await adminServices.updateAdminIntoDB(id, admin, password);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

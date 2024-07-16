@@ -6,6 +6,8 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { Admin } from './admin.model';
 import { adminSearchableFields } from './admin.constant';
 import { TAdmin } from './admin.interface';
+import config from '../../config';
+import bcrypt from 'bcrypt';
 
 const getAllAdminsFromDB = async (query: Record<string, unknown>) => {
   const adminQuery = new QueryBuilder(Admin.find(), query)
@@ -29,7 +31,11 @@ const getAdminByIdFromDB = async (id: string) => {
   return result;
 };
 
-const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>) => {
+const updateAdminIntoDB = async (
+  id: string,
+  payload: Partial<TAdmin>,
+  password: string,
+) => {
   const { name, ...remainingAdminData } = payload;
 
   const modifiedUpdatedData: Record<string, unknown> = {
@@ -40,6 +46,26 @@ const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>) => {
     for (const [key, value] of Object.entries(name)) {
       modifiedUpdatedData[`name.${key}`] = value;
     }
+  }
+
+  if (password) {
+    const adminId = await Admin.findById(id).select('id');
+
+    const user = await User.findOne({ id: adminId?.id });
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Admin not found!');
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(config.bcrypt_salt_rounds),
+    );
+
+    await User.findByIdAndUpdate(
+      user?._id,
+      { password: hashedPassword },
+      { new: true },
+    );
   }
 
   const result = await Admin.findByIdAndUpdate(id, modifiedUpdatedData, {

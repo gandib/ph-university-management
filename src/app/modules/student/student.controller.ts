@@ -36,13 +36,18 @@ const getStudentById = catchAsync(async (req, res) => {
 
 const updateStudentIntoDB = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { student } = req.body;
+  const { student, password } = req.body;
+
   const isUserExist = await Student.isUserExists(id);
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Student not exist!');
   }
 
-  const result = await studentServices.updateStudentIntoDB(id, student);
+  const result = await studentServices.updateStudentIntoDB(
+    id,
+    student,
+    password,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
