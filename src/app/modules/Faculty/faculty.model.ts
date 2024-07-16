@@ -21,7 +21,7 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
     id: { type: String, required: [true, 'Id is required'], unique: true },
     user: {
       type: Schema.Types.ObjectId,
-      required: [true, 'Faculty Id is required'],
+      required: [true, 'User Id is required'],
       unique: true,
       ref: 'User',
     },

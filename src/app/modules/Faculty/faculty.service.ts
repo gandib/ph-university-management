@@ -11,7 +11,7 @@ import bcrypt from 'bcrypt';
 
 const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
   const facultyQuery = new QueryBuilder(
-    Faculty.find().populate('user academicDepartment academicFaculty '),
+    Faculty.find().populate('user academicDepartment academicFaculty'),
     query,
   )
     .search(facultySearchableFields)
