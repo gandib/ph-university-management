@@ -91,6 +91,16 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
   },
 );
 
+facultySchema.virtual('fullName').get(function () {
+  return (
+    this?.name?.firstName +
+    ' ' +
+    this?.name?.middleName +
+    ' ' +
+    this?.name?.lastName
+  );
+});
+
 facultySchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Faculty.findById(id);
   return existingUser;

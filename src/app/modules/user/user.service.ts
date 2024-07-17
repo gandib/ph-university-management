@@ -254,26 +254,12 @@ const getMe = async (userId: string, role: string) => {
 };
 
 const changeStatus = async (id: string, payload: { status: string }) => {
-  const user = await User.findById(id);
-  const student = await Student.findById(id);
-  const faculty = await Faculty.findById(id);
-  const admin = await Admin.findById(id);
-  let userId;
-
-  if (user) {
-    userId = user?.id;
-  }
-  if (student) {
-    userId = student?.id;
-  }
-  if (faculty) {
-    userId = faculty?.id;
-  }
-  if (admin) {
-    userId = admin?.id;
+  const user = await User.findOne({ id });
+  if (!user) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User not found!');
   }
 
-  const result = await User.findOneAndUpdate({ id: userId }, payload, {
+  const result = await User.findOneAndUpdate({ id: id }, payload, {
     new: true,
   });
   return result;

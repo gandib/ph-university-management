@@ -101,26 +101,24 @@ const createStudentValidationSchema = z.object({
 const updateStudentValidationSchema = z.object({
   body: z.object({
     password: z.string().optional(),
-    student: z
-      .object({
-        name: updateUserNameValidationSchema.optional(),
-        gender: z.enum(['male', 'female', 'other']).optional(),
-        dateOfBirth: z.string().optional().optional(),
-        email: z.string().email().optional(),
-        contactNo: z.string().min(1).optional(),
-        emergencyContactNo: z.string().min(1).optional(),
-        bloodGroup: z
-          .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
-          .optional(),
-        presentAddress: z.string().min(1).optional(),
-        permanentAddress: z.string().min(1).optional(),
-        guardian: updateGuardianValidationSchema.optional(),
-        localGuardian: updateLocalGuardianValidationSchema.optional(),
-        profileImg: z.string().optional(),
-        admissionSemester: z.string().optional(),
-        academicDepartment: z.string().optional(),
-      })
-      .optional(),
+    student: z.object({
+      name: updateUserNameValidationSchema.optional(),
+      gender: z.enum(['male', 'female', 'other']).optional(),
+      dateOfBirth: z.string().optional().optional(),
+      email: z.string().email().optional(),
+      contactNo: z.string().min(1).optional(),
+      emergencyContactNo: z.string().min(1).optional(),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+        .optional(),
+      presentAddress: z.string().min(1).optional(),
+      permanentAddress: z.string().min(1).optional(),
+      guardian: updateGuardianValidationSchema.optional(),
+      localGuardian: updateLocalGuardianValidationSchema.optional(),
+      profileImg: z.string().optional(),
+      admissionSemester: z.string().optional(),
+      academicDepartment: z.string().optional(),
+    }),
   }),
 });
 

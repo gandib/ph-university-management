@@ -81,6 +81,16 @@ const adminSchema = new Schema<TAdmin, AdminModel>(
   },
 );
 
+adminSchema.virtual('fullName').get(function () {
+  return (
+    this?.name?.firstName +
+    ' ' +
+    this?.name?.middleName +
+    ' ' +
+    this?.name?.lastName
+  );
+});
+
 adminSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Admin.findById(id);
   return existingUser;
