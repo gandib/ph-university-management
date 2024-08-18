@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post(
   '/create-offered-course',
-  auth(USER_ROLE.superAdmin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(offeredCourseValidations.createOfferedCourseValidationSchema),
   offeredCourseControllers.createOfferedCourse,
 );
